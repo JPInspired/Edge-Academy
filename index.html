@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Edge Preview</title>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./vendor/three/build/three.module.js",
+        "three/addons/": "./vendor/three/examples/jsm/",
+        "./src/building.js": "./src/building.js?v=202611201710",
+        "./src/textures.js": "./src/textures.js?v=202611201710",
+        "./src/site.js": "./src/site.js?v=202611201710",
+        "./src/site-data.js": "./src/site-data.js?v=202611201710",
+        "./src/furniture.js": "./src/furniture.js?v=202611201710"
+      }
+    }
+  </script>
+  <style>
+    :root { --ink: #1f2a48; --muted: #5c6478; --panel: rgba(255, 255, 255, 0.9); --accent: #c2336e; --blue: #3d74b8; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #dfe9ef; font-family: "Segoe UI", system-ui, Arial, sans-serif; color: var(--ink); }
+    canvas { display: block; touch-action: none; }
+    .panel { position: fixed; background: var(--panel); border-radius: 12px; box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15); backdrop-filter: blur(6px); }
+    #info { top: 16px; left: 16px; width: 270px; padding: 14px 16px; max-height: calc(100vh - 32px); overflow: auto; box-sizing: border-box; }
+    #info h1 { font-size: 18px; margin: 0; }
+    #info .sub { font-size: 12px; color: var(--muted); margin: 2px 0 10px; }
+    #info h2 { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 12px 0 6px; }
+    #stops { display: grid; gap: 4px; }
+    #stops button { text-align: left; border: 0; background: #eef1f6; color: var(--ink); padding: 6px 9px; border-radius: 7px; font: inherit; font-size: 13px; cursor: pointer; }
+    #stops button:hover { background: #e1e7f1; }
+    #stops button.on { background: var(--ink); color: #fff; }
+    #vr { width: 100%; margin-top: 4px; padding: 10px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+    .toggle { width: 100%; padding: 7px 9px; border: 0; border-radius: 7px; background: #eef1f6; color: var(--ink); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+    .toggle:hover { background: #e1e7f1; }
+    .toggle.on { background: var(--ink); color: #fff; }
+    #vr:disabled { background: #aab0bd; cursor: default; }
+    .keys { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    kbd { background: #eef1f6; border-radius: 4px; padding: 0 5px; font-family: inherit; font-size: 11px; color: var(--ink); }
+    #mapwrap { right: 16px; bottom: 16px; padding: 8px 8px 4px; }
+    #mapwrap .label { font-size: 11px; color: var(--muted); padding: 0 4px 4px; display: flex; justify-content: space-between; }
+    #map { display: block; }
+    #toast { position: fixed; left: 50%; top: 22px; transform: translate(-50%, -10px); background: rgba(28, 36, 60, 0.85); color: #fff; padding: 8px 18px; border-radius: 20px; font-weight: 600; opacity: 0; transition: 0.25s; pointer-events: none; }
+    #toast.show { opacity: 1; transform: translate(-50%, 0); }
+    #cross { position: fixed; left: 50%; top: 50%; width: 6px; height: 6px; margin: -3px; border-radius: 50%; background: rgba(255, 255, 255, 0.8); box-shadow: 0 0 2px rgba(0, 0, 0, 0.6); pointer-events: none; }
+    #loading { position: fixed; inset: 0; display: grid; place-items: center; background: #dfe9ef; font-size: 15px; color: var(--muted); }
+    .hide-ui #info, .hide-ui #cross { display: none; }
+    .hide-map #mapwrap, .hide-ui #mapwrap { display: none; }
+    @media (max-width: 640px) {
+      #info { width: auto; right: 16px; max-height: 42vh; }
+      #mapwrap { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="loading">Building the Edge Academy…</div>
+  <div id="info" class="panel">
+    <h1>Edge Preview</h1>
+    <div class="sub">Edge Academy · PaRK International School Alfragide<br />Walkable blockout of spatial concept rev. 6, in the real campus</div>
+    <button id="vr" disabled>Checking for VR…</button>
+    <h2>Layout</h2>
+    <button id="chairs" class="toggle">Hide hub chairs</button>
+    <button id="time" class="toggle">Back to morning</button>
+    <h2>Go to</h2>
+    <div id="stops"></div>
+    <h2>Desktop</h2>
+    <div class="keys">
+      <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> walk · <kbd>Shift</kbd> faster<br />
+      Click and drag (or click to capture the mouse, <kbd>Esc</kbd> to release) to look<br />
+      <kbd>Q</kbd>/<kbd>E</kbd> or arrows turn · <kbd>1</kbd>–<kbd>8</kbd> jump to a room<br />
+      <kbd>C</kbd> show / hide hub chairs · <kbd>T</kbd> sunset / morning · <kbd>P</kbd> effects on / off<br />
+      <kbd>H</kbd> hide panels · <kbd>M</kbd> hide map
+    </div>
+    <h2>VR (Quest)</h2>
+    <div class="keys">
+      Left stick: walk (hold trigger to go faster)<br />
+      Right stick: snap turn<br />
+      <kbd>A</kbd>/<kbd>X</kbd> next room · <kbd>B</kbd>/<kbd>Y</kbd> previous room<br />
+      Click the left stick: show / hide hub chairs<br />
+      Click the right stick: sunset / morning
+    </div>
+  </div>
+  <div id="mapwrap" class="panel">
+    <div class="label"><span id="floor">Ground floor</span><span title="North (the building lies north-west to south-east)">N ↖</span></div>
+    <canvas id="map" width="300" height="130"></canvas>
+  </div>
+  <div id="toast"></div>
+  <div id="cross"></div>
+  <script type="module" src="./src/main.js?v=202611201710"></script>
+</body>
+</html>
