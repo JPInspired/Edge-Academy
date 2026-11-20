@@ -927,8 +927,8 @@ function schoolHall(b, M) {
   const x0 = 0.0;
   const x1 = 8.3;
   const zs = -0.3; // Edge's north wall, its hall side (its Reception side is z 0)
-  const zh = zs - 1.7; // the far wall of the school's hall
   const zb = -5.0; // the back of the block (where the main building's front is)
+  const zh = zb + 0.12; // the far wall of the school's hall (about 4.6 m from the doors)
   const H = 3.05;
   const da = 3.1;
   const db = 4.9;
@@ -956,7 +956,6 @@ function schoolHall(b, M) {
   b.bx(x0 - 0.12, x1 + 0.12, H, H + 0.05, zb, zs, M.hallCeil);
   for (const [a, c] of [[x0 - 0.12, x0], [x1, x1 + 0.12]]) b.bx(a, c, 0, H + 0.05, zb, zs, M.lobbyWall);
   b.bx(x0 - 0.12, x1 + 0.12, 0, H + 0.05, zh - 0.12, zh, M.lobbyWall);
-  b.bx(x0 - 0.12, x1 + 0.12, 0, H + 0.05, zb - 0.12, zb, M.lobbyWall); // (closing the block behind)
   b.bx(x0, x1, 0, 0.07, zh, zh + 0.012, M.skirting);
   // Edge's wall, painted cream on the hall side round the doorway, with its skirting
   for (const [a, c] of [[x0, da - 0.07], [db + 0.07, x1]]) {
@@ -964,7 +963,7 @@ function schoolHall(b, M) {
     b.bx(a, c, 0, 0.07, zs - 0.012, zs - 0.004, M.skirting);
   }
   b.bx(da - 0.07, db + 0.07, 2.38, H, zs - 0.004, zs, M.lobbyWall);
-  b.bx(3.75, 4.25, H - 0.015, H, zh + 0.6, zh + 0.7, M.led);
+  for (const z of [zs - 1.3, zh + 1.3]) for (const x of [2.4, 5.6]) b.bx(x - 0.6, x + 0.6, H - 0.015, H, z - 0.05, z + 0.05, M.led);
   // on its far wall, laid out to be seen through the open leaf from across Reception: Auditorium B's door with its
   // closer, sign and the exit sign over it, the extinguisher with its sign, the hose-reel cabinet
   b.bx(2.20, 3.10, 0, 2.2, zh, zh + 0.05, M.doorWhite);
