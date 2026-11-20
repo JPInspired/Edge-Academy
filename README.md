@@ -55,14 +55,13 @@ buildings, roads, paths, the pitch and fences, turned into the model's coordinat
 
 Heights, the slope and the furniture outside are estimates from photographs; the positions come from the map.
 
-**Inside the Edge block.** Visitors stay inside the Edge block (it opens at sunset in Reception); the surroundings are
+**Inside the Edge block.** Visitors stay inside the Edge block (it opens in Reception); the surroundings are
 there to be seen from its windows: the courtyard, PaRK's main building, the gym (a white hall with a white roof), the
 football pitch beside it (artificial turf, a white wall with PaRK on it, tall nets) with the car park along the access
 road, the wooded slopes, the motorway and the city around. The layout follows the school's site plan and the map.
 
-**Sunset and morning.** The **Back to morning** / **Sunset** button (desktop: <kbd>T</kbd>; Quest: click the right thumbstick) switches between a November
-Saturday morning and dusk as in the photographs of PaRK: the sun setting in the west-south-west, a lavender and orange
-sky, long shadows, the main building's windows and glazed ground floor lit, warm lights inside the Edge block.
+**Light.** Always a November Saturday morning: the sun low in the east-south-east, lighting the courtyard side and the
+Hub end. (A dusk look is still in the code, `edge.setLook(true)` in the browser console, but visitors are not offered it.)
 
 ## Run it
 

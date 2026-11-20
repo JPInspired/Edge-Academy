@@ -85,11 +85,13 @@ function captureEnvironment() {
 }
 captureEnvironment();
 world.ready.then(() => {
-  setLook(true, true); // the walkthrough opens at sunset (T or the Sunset button: morning)
+  setLook(false, true); // always the November morning (this also captures the finished sky for reflections)
   document.getElementById('loading')?.remove();
 });
 
-// ---------------------------------------------------------------- day or sunset
+// ---------------------------------------------------------------- the light
+// The walkthrough is always lit as the November morning. (The dusk look stays in LOOKS for edge.setLook(true) from
+// the console, but visitors are not offered it.)
 let dusk = false;
 function setLook(toDusk, quiet = false) {
   dusk = toDusk;
@@ -108,15 +110,8 @@ function setLook(toDusk, quiet = false) {
   }
   world.setDusk(dusk, L.sun);
   captureEnvironment(); // reflections and bounce light from the new sky (also re-bakes the sun shadows)
-  timeBtn.textContent = dusk ? 'Back to morning' : 'Sunset';
-  timeBtn.classList.toggle('on', dusk);
   if (!quiet) showToast(dusk ? 'Sunset' : 'Morning');
 }
-const timeBtn = document.getElementById('time');
-timeBtn.addEventListener('click', () => setLook(!dusk));
-addEventListener('keydown', (e) => {
-  if (e.code === 'KeyT') setLook(!dusk);
-});
 
 // ---------------------------------------------------------------- desktop post-processing
 // Ambient occlusion (contact darkening in corners and under furniture) and a soft glow on
@@ -355,16 +350,11 @@ function vrUpdate(dt) {
       } else if (Math.abs(ax) < 0.3) snapReady = true;
     }
     // A / X = next stop, B / Y = previous stop
-    // left thumbstick click = show / hide the hub chairs; right thumbstick click = sunset / morning
+    // left thumbstick click = show / hide the hub chairs
     if (src.handedness === 'left') {
       const now = !!gp.buttons[3]?.pressed;
       if (now && !pressed.get('chairs')) toggleChairs();
       pressed.set('chairs', now);
-    }
-    if (src.handedness === 'right') {
-      const now = !!gp.buttons[3]?.pressed;
-      if (now && !pressed.get('time')) setLook(!dusk);
-      pressed.set('time', now);
     }
     for (const [idx, dir] of [[4, 1], [5, -1]]) {
       const key = src.handedness + idx;
